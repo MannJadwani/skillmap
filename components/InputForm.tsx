@@ -1,20 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserPreferences } from '../types';
 import { Sparkles, ArrowRight, BookOpen, Target, BrainCircuit } from 'lucide-react';
 
 interface InputFormProps {
   onSubmit: (prefs: UserPreferences) => void;
   isLoading: boolean;
+  initialSkill?: string;
 }
 
-export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
-  const [step, setStep] = useState(1);
+export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading, initialSkill }) => {
+  const [step, setStep] = useState(initialSkill ? 2 : 1);
   const [formData, setFormData] = useState<UserPreferences>({
-    targetSkill: '',
+    targetSkill: initialSkill || '',
     currentLevel: 'Beginner',
     background: '',
     learningStyle: 'balanced'
   });
+
+  // Update if initialSkill changes
+  useEffect(() => {
+    if (initialSkill) {
+      setFormData(prev => ({ ...prev, targetSkill: initialSkill }));
+      setStep(2);
+    }
+  }, [initialSkill]);
 
   const handleChange = (field: keyof UserPreferences, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));

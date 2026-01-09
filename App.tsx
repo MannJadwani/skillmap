@@ -5,20 +5,29 @@ import {
   SignInButton,
   SignUpButton,
   UserButton,
+  useUser,
 } from '@clerk/clerk-react';
 import { Analytics } from '@vercel/analytics/react';
 import { InputForm } from './components/InputForm';
 import { RoadmapVisualizer } from './components/RoadmapVisualizer';
 import { ApiKeyInput } from './components/ApiKeyInput';
+import { SearchFirst } from './components/SearchFirst';
+import { PublicGallery } from './components/PublicGallery';
 import { generateRoadmap } from './services/geminiService';
+import { saveRoadmap, SavedRoadmap } from './services/roadmapService';
 import { Roadmap, UserPreferences } from './types';
-import { Map, Sparkles, ArrowRight } from 'lucide-react';
+import { Map, Sparkles, ArrowRight, Search, LayoutGrid } from 'lucide-react';
+
+type ViewMode = 'search' | 'create' | 'browse';
 
 const App: React.FC = () => {
+  const { user } = useUser();
   const [apiKey, setApiKey] = useState<string>('');
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('search');
+  const [prefillSkill, setPrefillSkill] = useState<string>('');
 
   useEffect(() => {
     const storedKey = localStorage.getItem('gemini_api_key');
@@ -43,14 +52,32 @@ const App: React.FC = () => {
     
     setIsLoading(true);
     setError(null);
+    
     try {
       const data = await generateRoadmap(prefs, apiKey);
       setRoadmap(data);
+      
+      // Save to Supabase
+      const saved = await saveRoadmap(
+        data,
+        prefs,
+        user?.id,
+        user?.fullName || user?.firstName || 'Anonymous'
+      );
+      
+      if (saved) {
+        console.log('Roadmap saved successfully:', saved.id);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGenerateFromSearch = (skill: string) => {
+    setPrefillSkill(skill);
+    setViewMode('create');
   };
 
   const handleNodeToggle = (nodeId: string) => {
@@ -70,6 +97,17 @@ const App: React.FC = () => {
   const handleReset = () => {
     setRoadmap(null);
     setError(null);
+    setViewMode('search');
+    setPrefillSkill('');
+  };
+
+  const handleSelectSavedRoadmap = (saved: SavedRoadmap) => {
+    const loadedRoadmap: Roadmap = {
+      title: saved.title,
+      description: saved.description,
+      nodes: saved.nodes,
+    };
+    setRoadmap(loadedRoadmap);
   };
 
   return (
@@ -154,16 +192,46 @@ const App: React.FC = () => {
             {!roadmap && (
               <header className="fixed top-0 w-full bg-dark-900/80 backdrop-blur-md border-b border-dark-700 z-50">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-primary">
+                  <button 
+                    onClick={() => { setViewMode('search'); setPrefillSkill(''); }}
+                    className="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity"
+                  >
                     <div className="p-2 bg-dark-800 rounded-lg border border-dark-700">
                       <Map size={20} className="text-primary" />
                     </div>
                     <span className="font-bold text-xl tracking-tight text-white">SkillMap AI</span>
+                  </button>
+                  
+                  {/* View Toggle */}
+                  <div className="flex items-center gap-1 bg-dark-800 p-1 rounded-lg border border-dark-700">
+                    <button
+                      onClick={() => { setViewMode('search'); setPrefillSkill(''); }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                        viewMode === 'search' || viewMode === 'create'
+                          ? 'bg-primary text-white'
+                          : 'text-dark-400 hover:text-white'
+                      }`}
+                    >
+                      <Search size={14} />
+                      <span className="hidden sm:inline">Search</span>
+                    </button>
+                    <button
+                      onClick={() => setViewMode('browse')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                        viewMode === 'browse'
+                          ? 'bg-primary text-white'
+                          : 'text-dark-400 hover:text-white'
+                      }`}
+                    >
+                      <LayoutGrid size={14} />
+                      <span className="hidden sm:inline">Browse All</span>
+                    </button>
                   </div>
+                  
                   <div className="flex items-center gap-4">
                     <button 
                       onClick={handleClearKey}
-                      className="text-sm font-medium text-dark-400 hover:text-white transition-colors"
+                      className="text-sm font-medium text-dark-400 hover:text-white transition-colors hidden sm:block"
                     >
                       Change API Key
                     </button>
@@ -183,39 +251,69 @@ const App: React.FC = () => {
             <main className={`h-screen flex flex-col ${!roadmap ? 'pt-16' : ''}`}>
               
               {!roadmap ? (
-                // Landing / Input State
-                <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 bg-dark-950 relative overflow-hidden">
-                   {/* Background Effects */}
-                   <div className="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
-                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
+                viewMode === 'browse' ? (
+                  // Browse All View
+                  <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-dark-950 relative">
+                    <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none" />
+                    <div className="max-w-6xl mx-auto relative z-10">
+                      <PublicGallery 
+                        onSelectRoadmap={handleSelectSavedRoadmap}
+                        onCreateNew={() => setViewMode('search')}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  // Search First or Create Form
+                  <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 bg-dark-950 relative overflow-hidden">
+                     {/* Background Effects */}
+                     <div className="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
+                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
 
-                   <div className="max-w-4xl w-full text-center mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700 relative z-10">
-                      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dark-800/50 border border-dark-700/50 text-primary text-xs font-bold uppercase tracking-wider mb-8 backdrop-blur-sm shadow-sm">
-                        <Sparkles size={12} />
-                        <span>Unlock Your Potential</span>
-                      </div>
-                      
-                      <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-2 tracking-tight leading-none uppercase">
-                        Your personalized path to
-                      </h1>
-                      <div className="font-script text-5xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-primary pb-4 transform -rotate-2 mt-1">
-                        Mastering any skill
-                      </div>
-                      
-                      <p className="text-lg md:text-xl text-dark-400 max-w-2xl mx-auto mt-6">
-                        Stop guessing what to learn next. Tell us your goal and background, and our AI will engineer a custom step-by-step roadmap for you.
-                      </p>
-                   </div>
+                     <div className="max-w-4xl w-full text-center mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative z-10">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dark-800/50 border border-dark-700/50 text-primary text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-sm shadow-sm">
+                          <Sparkles size={12} />
+                          <span>Unlock Your Potential</span>
+                        </div>
+                        
+                        <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-2 tracking-tight leading-none uppercase">
+                          {viewMode === 'search' ? 'Find or Create' : 'Customize'} Your Path
+                        </h1>
+                        <div className="font-script text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-primary pb-3 transform -rotate-2 mt-1">
+                          {viewMode === 'search' ? 'to any skill' : prefillSkill || 'your roadmap'}
+                        </div>
+                     </div>
 
-                   <div className="w-full flex justify-center z-10">
-                     {error && (
-                       <div className="absolute top-24 mx-auto bg-red-900/20 text-red-400 px-4 py-2 rounded-lg border border-red-900/50 text-sm animate-in fade-in slide-in-from-top-2">
-                         {error}
-                       </div>
-                     )}
-                     <InputForm onSubmit={handleGenerate} isLoading={isLoading} />
-                   </div>
-                </div>
+                     <div className="w-full flex justify-center z-10">
+                       {error && (
+                         <div className="absolute top-24 mx-auto bg-red-900/20 text-red-400 px-4 py-2 rounded-lg border border-red-900/50 text-sm animate-in fade-in slide-in-from-top-2">
+                           {error}
+                         </div>
+                       )}
+                       
+                       {viewMode === 'search' ? (
+                         <SearchFirst 
+                           onSelectRoadmap={handleSelectSavedRoadmap}
+                           onGenerateNew={handleGenerateFromSearch}
+                           onBrowseAll={() => setViewMode('browse')}
+                         />
+                       ) : (
+                         <div className="w-full max-w-3xl">
+                           <button
+                             onClick={() => { setViewMode('search'); setPrefillSkill(''); }}
+                             className="mb-4 text-sm text-dark-400 hover:text-white transition-colors flex items-center gap-1"
+                           >
+                             ← Back to search
+                           </button>
+                           <InputForm 
+                             onSubmit={handleGenerate} 
+                             isLoading={isLoading} 
+                             initialSkill={prefillSkill}
+                           />
+                         </div>
+                       )}
+                     </div>
+                  </div>
+                )
               ) : (
                 // Roadmap Dashboard State
                 <div className="flex h-full overflow-hidden">
@@ -266,7 +364,7 @@ const App: React.FC = () => {
                          onClick={handleReset}
                          className="group w-full flex items-center justify-between bg-gradient-to-r from-primary to-orange-400 text-white font-bold py-2 pl-4 pr-2 rounded-full shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all transform hover:-translate-y-0.5"
                        >
-                         <span className="text-sm">New Roadmap</span>
+                         <span className="text-sm">New Search</span>
                          <div className="bg-white text-primary rounded-full p-1.5 shadow-sm group-hover:scale-110 transition-transform duration-200">
                            <ArrowRight size={16} />
                          </div>
