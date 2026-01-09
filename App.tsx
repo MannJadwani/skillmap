@@ -12,7 +12,7 @@ import { RoadmapVisualizer } from './components/RoadmapVisualizer';
 import { ApiKeyInput } from './components/ApiKeyInput';
 import { generateRoadmap } from './services/geminiService';
 import { Roadmap, UserPreferences } from './types';
-import { Map, Sparkles } from 'lucide-react';
+import { Map, Sparkles, ArrowRight } from 'lucide-react';
 
 const App: React.FC = () => {
   const [apiKey, setApiKey] = useState<string>('');
@@ -77,29 +77,43 @@ const App: React.FC = () => {
       <Analytics />
       {/* Signed Out State - Show Sign In / Sign Up */}
       <SignedOut>
-        <div className="min-h-screen bg-dark-950 text-white font-sans bg-dot-pattern flex flex-col items-center justify-center p-4">
-          <div className="text-center mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="flex items-center justify-center gap-2 text-primary mb-6">
-              <div className="p-3 bg-dark-800 rounded-xl border border-dark-700">
-                <Map size={32} className="text-primary" />
-              </div>
-              <span className="font-bold text-3xl tracking-tight text-white">SkillMap AI</span>
+        <div className="min-h-screen bg-dark-950 text-white font-sans relative overflow-hidden flex flex-col items-center justify-center p-4">
+          
+          {/* Background Effects */}
+          <div className="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
+
+          <div className="relative z-10 text-center mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-4xl mx-auto">
+            
+            {/* Logo / Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dark-800/50 border border-dark-700/50 text-primary text-xs font-bold uppercase tracking-wider mb-8 backdrop-blur-sm shadow-sm">
+              <Sparkles size={12} />
+              <span>Unlock Your Potential</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
-              Your personalized path to <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">mastering any skill</span>
+
+            {/* Main Heading */}
+            <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-2 tracking-tight leading-none uppercase">
+              Your personalized path to
             </h1>
-            <p className="text-lg text-dark-400 max-w-xl mx-auto mb-8">
-              Sign in to create AI-powered learning roadmaps tailored to your goals.
+            <div className="font-script text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-primary pb-4 transform -rotate-2 mt-2">
+              Mastering any skill
+            </div>
+
+            <p className="text-lg md:text-xl text-dark-400 max-w-2xl mx-auto mb-10 leading-relaxed mt-6">
+              Stop guessing what to learn next. Tell us your goal, and our AI will engineer a custom, step-by-step roadmap just for you.
             </p>
-            <div className="flex items-center justify-center gap-4">
+
+            <div className="flex items-center justify-center gap-6">
               <SignInButton mode="modal">
-                <button className="px-6 py-3 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-colors shadow-lg shadow-primary/25">
-                  Sign In
+                <button className="group flex items-center gap-3 bg-gradient-to-r from-primary to-orange-400 text-white font-bold py-3 pl-8 pr-3 rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40 transition-all transform hover:-translate-y-0.5">
+                  <span className="text-lg">Sign In</span>
+                  <div className="bg-white text-primary rounded-full p-2 shadow-sm group-hover:scale-110 transition-transform duration-200">
+                    <ArrowRight size={20} />
+                  </div>
                 </button>
               </SignInButton>
               <SignUpButton mode="modal">
-                <button className="px-6 py-3 bg-dark-800 hover:bg-dark-700 text-white font-semibold rounded-xl transition-colors border border-dark-700 shadow-sm">
+                <button className="px-8 py-4 text-dark-400 font-semibold hover:text-white transition-colors text-lg">
                   Sign Up
                 </button>
               </SignUpButton>
@@ -170,17 +184,25 @@ const App: React.FC = () => {
               
               {!roadmap ? (
                 // Landing / Input State
-                <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 bg-dot-pattern">
-                   <div className="max-w-3xl w-full text-center mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-dark-800 border border-dark-700 text-primary text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
+                <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 bg-dark-950 relative overflow-hidden">
+                   {/* Background Effects */}
+                   <div className="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
+                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
+
+                   <div className="max-w-4xl w-full text-center mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700 relative z-10">
+                      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-dark-800/50 border border-dark-700/50 text-primary text-xs font-bold uppercase tracking-wider mb-8 backdrop-blur-sm shadow-sm">
                         <Sparkles size={12} />
-                        <span>Powered by Gemini 2.0 Flash</span>
+                        <span>Unlock Your Potential</span>
                       </div>
-                      <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">
-                        Your personalized path to <br/>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">mastering any skill</span>
+                      
+                      <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-2 tracking-tight leading-none uppercase">
+                        Your personalized path to
                       </h1>
-                      <p className="text-lg md:text-xl text-dark-400 max-w-2xl mx-auto">
+                      <div className="font-script text-5xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-primary pb-4 transform -rotate-2 mt-1">
+                        Mastering any skill
+                      </div>
+                      
+                      <p className="text-lg md:text-xl text-dark-400 max-w-2xl mx-auto mt-6">
                         Stop guessing what to learn next. Tell us your goal and background, and our AI will engineer a custom step-by-step roadmap for you.
                       </p>
                    </div>
@@ -239,12 +261,15 @@ const App: React.FC = () => {
                         </div>
                      </div>
 
-                     <div className="p-4 border-t border-dark-700 space-y-2">
+                     <div className="p-4 border-t border-dark-700 space-y-4">
                        <button 
                          onClick={handleReset}
-                         className="w-full py-2 px-4 bg-dark-800 hover:bg-dark-700 text-white rounded-lg text-sm font-medium transition-colors border border-dark-700"
+                         className="group w-full flex items-center justify-between bg-gradient-to-r from-primary to-orange-400 text-white font-bold py-2 pl-4 pr-2 rounded-full shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all transform hover:-translate-y-0.5"
                        >
-                         Create New Roadmap
+                         <span className="text-sm">New Roadmap</span>
+                         <div className="bg-white text-primary rounded-full p-1.5 shadow-sm group-hover:scale-110 transition-transform duration-200">
+                           <ArrowRight size={16} />
+                         </div>
                        </button>
                        <button 
                          onClick={handleClearKey}

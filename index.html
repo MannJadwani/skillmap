@@ -64,13 +64,14 @@
     </script>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
+              sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+              script: ['Dancing Script', 'cursive'],
             },
             colors: {
               brand: {
@@ -108,9 +109,13 @@
         color: #e5e5e5;
       }
       /* Dot pattern background - tailored for dark mode */
-      .bg-dot-pattern {
-        background-image: radial-gradient(#2c2c2c 1px, transparent 1px);
-        background-size: 24px 24px;
+      .bg-grid-pattern {
+        background-image: 
+          linear-gradient(to right, #1e1e1e 1px, transparent 1px),
+          linear-gradient(to bottom, #1e1e1e 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
       }
       /* Custom scrollbar */
       ::-webkit-scrollbar {

@@ -172,21 +172,23 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
           <button
             onClick={handleNext}
             disabled={!isStepValid() || isLoading}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold text-white transition-all transform active:scale-95 ${
+            className={`group flex items-center gap-3 pl-6 pr-2 py-2 rounded-full font-bold text-white transition-all transform hover:-translate-y-0.5 shadow-lg ${
               !isStepValid() || isLoading
-                ? 'bg-dark-700 text-dark-500 cursor-not-allowed'
-                : 'bg-primary hover:bg-primary-hover shadow-lg hover:shadow-primary/30'
+                ? 'bg-dark-700 text-dark-500 cursor-not-allowed shadow-none transform-none'
+                : 'bg-gradient-to-r from-primary to-orange-400 shadow-primary/40 hover:shadow-xl hover:shadow-primary/50'
             }`}
           >
             {isLoading ? (
               <>
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Generating...</span>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin ml-2" />
+                <span className="mr-4">Generating...</span>
               </>
             ) : (
               <>
-                <span>{step === 3 ? 'Generate Roadmap' : 'Next Step'}</span>
-                <ArrowRight size={20} />
+                <span className="text-lg">{step === 3 ? 'Generate Roadmap' : 'Next Step'}</span>
+                <div className={`bg-white text-primary rounded-full p-2 shadow-sm ${(!isStepValid() || isLoading) ? 'opacity-50' : 'group-hover:scale-110 transition-transform duration-200'}`}>
+                  <ArrowRight size={20} />
+                </div>
               </>
             )}
           </button>

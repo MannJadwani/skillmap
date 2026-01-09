@@ -42,10 +42,12 @@ export const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ onSubmit }) => {
           <button
             type="submit"
             disabled={!key.trim()}
-            className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-bold py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
+            className="group w-full flex items-center justify-between bg-gradient-to-r from-primary to-orange-400 text-white font-bold py-2 pl-6 pr-2 rounded-full shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            <span>Get Started</span>
-            <ArrowRight size={18} />
+            <span className="text-lg">Get Started</span>
+            <div className="bg-white text-primary rounded-full p-2 shadow-sm group-hover:scale-110 transition-transform duration-200">
+              <ArrowRight size={20} />
+            </div>
           </button>
         </form>
 
