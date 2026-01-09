@@ -1,0 +1,5 @@
+{
+  "name": "SkillMap AI",
+  "description": "An AI-powered technical learning roadmap generator that visualizes your path from beginner to expert based on your background.",
+  "requestFramePermissions": []
+}
