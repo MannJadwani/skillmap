@@ -32,12 +32,12 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+    <div className="w-full max-w-2xl mx-auto bg-dark-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-dark-700 overflow-hidden">
       
       {/* Progress Bar */}
-      <div className="h-1 w-full bg-slate-100">
+      <div className="h-1 w-full bg-dark-700">
         <div 
-          className="h-full bg-brand-500 transition-all duration-500 ease-out"
+          className="h-full bg-primary transition-all duration-500 ease-out"
           style={{ width: `${(step / 3) * 100}%` }}
         />
       </div>
@@ -47,23 +47,23 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
         {step === 1 && (
           <div className="animate-in fade-in slide-in-from-right-8 duration-500">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-brand-100 rounded-lg text-brand-600">
+              <div className="p-3 bg-dark-700 rounded-lg text-primary border border-dark-600">
                 <Target size={24} />
               </div>
-              <h2 className="text-2xl font-bold text-slate-800">What do you want to learn?</h2>
+              <h2 className="text-2xl font-bold text-white">What do you want to learn?</h2>
             </div>
             
             <div className="space-y-4">
-              <label className="block text-sm font-medium text-slate-500">Target Skill / Technology</label>
+              <label className="block text-sm font-medium text-dark-400">Target Skill / Technology</label>
               <input
                 type="text"
                 value={formData.targetSkill}
                 onChange={(e) => handleChange('targetSkill', e.target.value)}
                 placeholder="e.g., React Native, Python for Data Science, Kubernetes..."
-                className="w-full text-lg p-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all outline-none"
+                className="w-full text-lg p-4 rounded-xl border border-dark-700 bg-dark-900 text-white placeholder:text-dark-500 focus:bg-dark-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
                 autoFocus
               />
-              <p className="text-sm text-slate-400">Be as specific as you like!</p>
+              <p className="text-sm text-dark-500">Be as specific as you like!</p>
             </div>
           </div>
         )}
@@ -72,15 +72,15 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
         {step === 2 && (
           <div className="animate-in fade-in slide-in-from-right-8 duration-500">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
+              <div className="p-3 bg-purple-900/20 rounded-lg text-purple-400 border border-purple-900/30">
                 <BrainCircuit size={24} />
               </div>
-              <h2 className="text-2xl font-bold text-slate-800">Current Knowledge</h2>
+              <h2 className="text-2xl font-bold text-white">Current Knowledge</h2>
             </div>
 
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-500 mb-2">How would you rate your current skill level in this area?</label>
+                <label className="block text-sm font-medium text-dark-400 mb-2">How would you rate your current skill level in this area?</label>
                 <div className="grid grid-cols-3 gap-3">
                   {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
                     <button
@@ -88,8 +88,8 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
                       onClick={() => handleChange('currentLevel', level)}
                       className={`p-3 rounded-lg border text-sm font-medium transition-all ${
                         formData.currentLevel === level
-                          ? 'bg-brand-50 border-brand-500 text-brand-700'
-                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                          ? 'bg-primary/10 border-primary text-primary'
+                          : 'bg-dark-900 border-dark-700 text-dark-400 hover:bg-dark-800 hover:text-white'
                       }`}
                     >
                       {level}
@@ -99,12 +99,12 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-500 mb-2">What is your background?</label>
+                <label className="block text-sm font-medium text-dark-400 mb-2">What is your background?</label>
                 <textarea
                   value={formData.background}
                   onChange={(e) => handleChange('background', e.target.value)}
                   placeholder="e.g., I'm a frontend dev looking to go fullstack, or I know basic Java..."
-                  className="w-full p-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all outline-none resize-none h-32"
+                  className="w-full p-4 rounded-xl border border-dark-700 bg-dark-900 text-white placeholder:text-dark-500 focus:bg-dark-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none h-32"
                 />
               </div>
             </div>
@@ -115,14 +115,14 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
         {step === 3 && (
           <div className="animate-in fade-in slide-in-from-right-8 duration-500">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-teal-100 rounded-lg text-teal-600">
+              <div className="p-3 bg-teal-900/20 rounded-lg text-teal-400 border border-teal-900/30">
                 <BookOpen size={24} />
               </div>
-              <h2 className="text-2xl font-bold text-slate-800">Learning Preferences</h2>
+              <h2 className="text-2xl font-bold text-white">Learning Preferences</h2>
             </div>
 
             <div className="space-y-4">
-              <label className="block text-sm font-medium text-slate-500 mb-2">How do you prefer to learn?</label>
+              <label className="block text-sm font-medium text-dark-400 mb-2">How do you prefer to learn?</label>
               <div className="space-y-3">
                 {[
                   { id: 'theory', title: 'Theory First', desc: 'Deep dive into concepts before coding.' },
@@ -134,18 +134,18 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
                     onClick={() => handleChange('learningStyle', style.id)}
                     className={`w-full flex items-center p-4 rounded-xl border transition-all text-left ${
                       formData.learningStyle === style.id
-                        ? 'bg-teal-50 border-teal-500 shadow-md ring-1 ring-teal-500'
-                        : 'bg-white border-slate-200 hover:border-teal-300'
+                        ? 'bg-primary/10 border-primary shadow-md ring-1 ring-primary'
+                        : 'bg-dark-900 border-dark-700 hover:border-primary/50 text-dark-400 hover:text-white'
                     }`}
                   >
                     <div>
-                      <div className={`font-semibold ${formData.learningStyle === style.id ? 'text-teal-900' : 'text-slate-700'}`}>
+                      <div className={`font-semibold ${formData.learningStyle === style.id ? 'text-primary' : 'text-white'}`}>
                         {style.title}
                       </div>
-                      <div className="text-sm text-slate-500">{style.desc}</div>
+                      <div className="text-sm text-dark-500">{style.desc}</div>
                     </div>
                     {formData.learningStyle === style.id && (
-                      <div className="ml-auto text-teal-600">
+                      <div className="ml-auto text-primary">
                         <Sparkles size={20} />
                       </div>
                     )}
@@ -157,11 +157,11 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
         )}
 
         {/* Navigation */}
-        <div className="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
+        <div className="flex justify-between items-center mt-10 pt-6 border-t border-dark-700">
           {step > 1 ? (
             <button
               onClick={() => setStep(step - 1)}
-              className="text-slate-500 font-medium hover:text-slate-800 transition-colors"
+              className="text-dark-400 font-medium hover:text-white transition-colors"
             >
               Back
             </button>
@@ -174,8 +174,8 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
             disabled={!isStepValid() || isLoading}
             className={`flex items-center gap-2 px-8 py-3 rounded-full font-bold text-white transition-all transform active:scale-95 ${
               !isStepValid() || isLoading
-                ? 'bg-slate-300 cursor-not-allowed'
-                : 'bg-brand-600 hover:bg-brand-700 shadow-lg hover:shadow-brand-500/30'
+                ? 'bg-dark-700 text-dark-500 cursor-not-allowed'
+                : 'bg-primary hover:bg-primary-hover shadow-lg hover:shadow-primary/30'
             }`}
           >
             {isLoading ? (

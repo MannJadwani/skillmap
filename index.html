@@ -13,24 +13,24 @@
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#2563eb" />
     
-    <!-- Canonical URL (update with your domain) -->
-    <link rel="canonical" href="https://skillmap.ai/" />
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://skillmap.neuralarc.in/" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://skillmap.ai/" />
+    <meta property="og:url" content="https://skillmap.neuralarc.in/" />
     <meta property="og:title" content="SkillMap AI — AI-Powered Personalized Learning Roadmaps" />
     <meta property="og:description" content="Create personalized learning roadmaps with AI. Tell us your goal and background, and SkillMap AI generates a custom step-by-step path to master any skill." />
-    <meta property="og:image" content="https://skillmap.ai/og-image.png" />
+    <meta property="og:image" content="https://skillmap.neuralarc.in/og-image.png" />
     <meta property="og:site_name" content="SkillMap AI" />
     <meta property="og:locale" content="en_US" />
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://skillmap.ai/" />
+    <meta name="twitter:url" content="https://skillmap.neuralarc.in/" />
     <meta name="twitter:title" content="SkillMap AI — AI-Powered Personalized Learning Roadmaps" />
     <meta name="twitter:description" content="Create personalized learning roadmaps with AI. Tell us your goal and background, and SkillMap AI generates a custom step-by-step path to master any skill." />
-    <meta name="twitter:image" content="https://skillmap.ai/og-image.png" />
+    <meta name="twitter:image" content="https://skillmap.neuralarc.in/og-image.png" />
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -48,7 +48,7 @@
       "@type": "WebApplication",
       "name": "SkillMap AI",
       "description": "AI-powered personalized learning roadmap generator. Create custom step-by-step paths to master any skill.",
-      "url": "https://skillmap.ai",
+      "url": "https://skillmap.neuralarc.in",
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Web",
       "offers": {
@@ -74,16 +74,28 @@
             },
             colors: {
               brand: {
-                50: '#eff6ff',
-                100: '#dbeafe',
-                200: '#bfdbfe',
-                300: '#93c5fd',
-                400: '#60a5fa',
-                500: '#3b82f6',
-                600: '#2563eb',
-                700: '#1d4ed8',
-                800: '#1e40af',
-                900: '#1e3a8a',
+                50: '#fff7ed',
+                100: '#ffedd5',
+                200: '#fed7aa',
+                300: '#fdba74',
+                400: '#fb923c',
+                500: '#f97316',
+                600: '#ea580c',
+                700: '#c2410c',
+                800: '#9a3412',
+                900: '#7c2d12',
+              },
+              dark: {
+                950: '#0a0a0a', // Main background (nearly black)
+                900: '#121212', // Secondary background
+                800: '#1e1e1e', // Cards / Inputs
+                700: '#2c2c2c', // Borders / Hover
+                400: '#9ca3af', // Secondary text
+                200: '#e5e5e5', // Primary text
+              },
+              primary: {
+                DEFAULT: '#FF9F1C', // The specific vibrant orange from the image
+                hover: '#ff8c00',
               }
             }
           }
@@ -91,9 +103,13 @@
       }
     </script>
     <style>
-      /* Dot pattern background */
+      body {
+        background-color: #0a0a0a;
+        color: #e5e5e5;
+      }
+      /* Dot pattern background - tailored for dark mode */
       .bg-dot-pattern {
-        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-image: radial-gradient(#2c2c2c 1px, transparent 1px);
         background-size: 24px 24px;
       }
       /* Custom scrollbar */

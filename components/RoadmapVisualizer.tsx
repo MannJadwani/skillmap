@@ -155,12 +155,13 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
 
-    // Clear
-    ctx.clearRect(0, 0, rect.width, rect.height);
+    // Clear with Dark Background
+    ctx.fillStyle = '#0a0a0a'; // bg-dark-950
+    ctx.fillRect(0, 0, rect.width, rect.height);
 
     // Background Grid (Dot Pattern)
     const gridSize = 24 * scale;
-    ctx.fillStyle = '#f1f5f9';
+    ctx.fillStyle = '#2c2c2c'; // bg-dark-700
     for(let x = (offset.x % gridSize); x < rect.width; x += gridSize) {
        for(let y = (offset.y % gridSize); y < rect.height; y += gridSize) {
           ctx.beginPath();
@@ -195,8 +196,8 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
             
             // Gradient Stroke
             const grad = ctx.createLinearGradient(startX, startY, endX, endY);
-            grad.addColorStop(0, '#cbd5e1'); // Slate-300
-            grad.addColorStop(1, '#94a3b8'); // Slate-400
+            grad.addColorStop(0, '#2c2c2c'); // Dark-700
+            grad.addColorStop(1, '#525252'); // Dark-600
             ctx.strokeStyle = grad;
             ctx.stroke();
          }
@@ -209,13 +210,13 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
       const isHovered = hoveredNodeId === node.id;
       
       // Node Shadow
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.08)';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
       ctx.shadowBlur = 12;
       ctx.shadowOffsetY = 4;
 
       // Node Background
-      ctx.fillStyle = '#ffffff';
-      if (isCompleted) ctx.fillStyle = '#eff6ff'; // brand-50
+      ctx.fillStyle = '#1e1e1e'; // bg-dark-800
+      if (isCompleted) ctx.fillStyle = '#2d1b0e'; // Slight orange tint for completed
       
       drawRoundedRect(ctx, node.x, node.y, NODE_WIDTH, NODE_HEIGHT, RADIUS);
       ctx.fill();
@@ -225,20 +226,20 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
 
       // Node Border
       ctx.lineWidth = isHovered ? 2 : 1;
-      ctx.strokeStyle = '#e2e8f0'; // slate-200
-      if (isCompleted) ctx.strokeStyle = '#60a5fa'; // brand-400
-      if (isHovered) ctx.strokeStyle = '#3b82f6'; // brand-500
+      ctx.strokeStyle = '#2c2c2c'; // border-dark-700
+      if (isCompleted) ctx.strokeStyle = '#ea580c'; // primary-600
+      if (isHovered) ctx.strokeStyle = '#f97316'; // primary-500
       
       ctx.stroke();
 
       // Top Bar (Color code by type)
       const typeColors: Record<string, string> = {
-        CONCEPT: '#64748b', // Slate
+        CONCEPT: '#525252', // Neutral
         PROJECT: '#9333ea', // Purple
-        MILESTONE: '#d97706', // Amber
+        MILESTONE: '#ea580c', // Primary Orange
         RESOURCE: '#3b82f6', // Blue
       };
-      const barColor = typeColors[node.data.type] || '#64748b';
+      const barColor = typeColors[node.data.type] || '#525252';
       
       ctx.fillStyle = barColor;
       ctx.beginPath();
@@ -250,13 +251,13 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
       ctx.fill();
 
       // Type Label
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = '#e5e5e5';
       ctx.font = 'bold 10px Inter, sans-serif';
       ctx.fillText(node.data.type, node.x + 12, node.y + 10);
 
       // Status Badge (Top Right)
       if (isCompleted) {
-        ctx.fillStyle = '#22c55e'; // Green
+        ctx.fillStyle = '#f97316'; // Primary Orange
         ctx.beginPath();
         ctx.arc(node.x + NODE_WIDTH - 20, node.y + 24, 8, 0, Math.PI * 2);
         ctx.fill();
@@ -271,24 +272,24 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
       } else {
         ctx.beginPath();
         ctx.arc(node.x + NODE_WIDTH - 20, node.y + 24, 8, 0, Math.PI * 2);
-        ctx.strokeStyle = '#cbd5e1';
+        ctx.strokeStyle = '#525252';
         ctx.lineWidth = 1.5;
         ctx.stroke();
       }
 
       // Title
-      ctx.fillStyle = isCompleted ? '#1e3a8a' : '#0f172a'; // slate-900
+      ctx.fillStyle = isCompleted ? '#fb923c' : '#ffffff'; 
       ctx.font = 'bold 16px Inter, sans-serif';
       wrapText(ctx, node.data.title, node.x + 20, node.y + 50, NODE_WIDTH - 40, 20);
 
       // Description (Truncated)
-      ctx.fillStyle = '#64748b'; // slate-500
+      ctx.fillStyle = '#9ca3af'; // dark-400
       ctx.font = '12px Inter, sans-serif';
       const descHeight = wrapText(ctx, node.data.description, node.x + 20, node.y + 90, NODE_WIDTH - 40, 16);
 
       // Metadata (Bottom)
       const hours = `${node.data.estimatedHours}h`;
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = '#525252'; // dark-600
       ctx.font = '11px Inter, sans-serif';
       ctx.fillText(hours, node.x + 20, node.y + NODE_HEIGHT - 15);
       
@@ -390,41 +391,41 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
   const progress = Math.round((completedCount / roadmap.nodes.length) * 100);
 
   return (
-    <div className="flex flex-col h-full bg-slate-50">
+    <div className="flex flex-col h-full bg-dark-950">
       {/* Header Overlay */}
       <div className="absolute top-4 left-4 right-4 z-10 flex justify-between pointer-events-none">
-         <div className="bg-white/90 backdrop-blur shadow-lg border border-slate-200 p-4 rounded-xl pointer-events-auto max-w-md">
-            <h1 className="font-bold text-slate-800 text-lg">{roadmap.title}</h1>
-            <p className="text-sm text-slate-500 line-clamp-2">{roadmap.description}</p>
+         <div className="bg-dark-900/90 backdrop-blur shadow-lg border border-dark-700 p-4 rounded-xl pointer-events-auto max-w-md">
+            <h1 className="font-bold text-white text-lg">{roadmap.title}</h1>
+            <p className="text-sm text-dark-400 line-clamp-2">{roadmap.description}</p>
             <div className="mt-3 flex items-center gap-3">
-               <div className="h-2 flex-1 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-brand-500 transition-all duration-500" style={{ width: `${progress}%` }} />
+               <div className="h-2 flex-1 bg-dark-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
                </div>
-               <span className="text-xs font-bold text-brand-600">{progress}%</span>
+               <span className="text-xs font-bold text-primary">{progress}%</span>
             </div>
          </div>
 
          <div className="flex flex-col gap-2 pointer-events-auto">
             <button 
-              className="p-2 bg-white shadow-md rounded-lg border border-slate-200 hover:bg-slate-50"
+              className="p-2 bg-dark-800 shadow-md rounded-lg border border-dark-700 hover:bg-dark-700"
               onClick={() => setScale(s => Math.min(s + 0.1, 2))}
             >
-              <ZoomIn size={20} className="text-slate-600" />
+              <ZoomIn size={20} className="text-dark-400" />
             </button>
             <button 
-              className="p-2 bg-white shadow-md rounded-lg border border-slate-200 hover:bg-slate-50"
+              className="p-2 bg-dark-800 shadow-md rounded-lg border border-dark-700 hover:bg-dark-700"
               onClick={() => setScale(s => Math.max(s - 0.1, 0.2))}
             >
-              <ZoomOut size={20} className="text-slate-600" />
+              <ZoomOut size={20} className="text-dark-400" />
             </button>
             <button 
-              className="p-2 bg-white shadow-md rounded-lg border border-slate-200 hover:bg-slate-50"
+              className="p-2 bg-dark-800 shadow-md rounded-lg border border-dark-700 hover:bg-dark-700"
               onClick={() => {
                 setScale(0.8);
                 setOffset({ x: 50, y: 50 });
               }}
             >
-              <Maximize size={20} className="text-slate-600" />
+              <Maximize size={20} className="text-dark-400" />
             </button>
          </div>
       </div>
@@ -442,11 +443,11 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
         />
       </div>
 
-      <div className="bg-white border-t border-slate-200 px-6 py-2 flex items-center justify-between text-xs text-slate-500">
+      <div className="bg-dark-900 border-t border-dark-700 px-6 py-2 flex items-center justify-between text-xs text-dark-500">
          <div className="flex gap-4">
-            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-slate-500"/> Concept</div>
+            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-dark-500"/> Concept</div>
             <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-purple-600"/> Project</div>
-            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-amber-500"/> Milestone</div>
+            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-primary"/> Milestone</div>
          </div>
          <div>
             Scroll to Zoom • Drag to Pan • Click to Complete
