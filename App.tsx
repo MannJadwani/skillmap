@@ -6,6 +6,7 @@ import {
   SignUpButton,
   UserButton,
 } from '@clerk/clerk-react';
+import { Analytics } from '@vercel/analytics/react';
 import { InputForm } from './components/InputForm';
 import { RoadmapVisualizer } from './components/RoadmapVisualizer';
 import { ApiKeyInput } from './components/ApiKeyInput';
@@ -73,6 +74,7 @@ const App: React.FC = () => {
 
   return (
     <>
+      <Analytics />
       {/* Signed Out State - Show Sign In / Sign Up */}
       <SignedOut>
         <div className="min-h-screen bg-slate-50 text-slate-900 font-sans bg-dot-pattern flex flex-col items-center justify-center p-4">
