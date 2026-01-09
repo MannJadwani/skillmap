@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Link } from 'react-router-dom';
 import {
   SignedIn,
   SignedOut,
@@ -14,6 +14,7 @@ import { HomePage } from './pages/HomePage';
 import { BrowsePage } from './pages/BrowsePage';
 import { CreatePage } from './pages/CreatePage';
 import { RoadmapPage } from './pages/RoadmapPage';
+import { EditRoadmapPage } from './pages/EditRoadmapPage';
 import { SEO } from './components/SEO';
 import { Sparkles, ArrowRight, Map } from 'lucide-react';
 
@@ -57,12 +58,12 @@ const RequireAuth: React.FC = () => (
         </SignUpButton>
       </div>
 
-      <button
-        onClick={() => window.history.back()}
-        className="mt-6 text-sm text-dark-500 hover:text-white transition-colors"
+      <Link
+        to="/"
+        className="mt-6 text-sm text-dark-500 hover:text-white transition-colors inline-block"
       >
         ← Go back
-      </button>
+      </Link>
     </div>
   </div>
 );
@@ -134,6 +135,13 @@ const App: React.FC = () => {
         <Route path="/roadmap/:id" element={
           <Layout>
             <RoadmapPage />
+          </Layout>
+        } />
+        
+        {/* Edit route - requires authentication and ownership */}
+        <Route path="/edit/:id" element={
+          <Layout>
+            <EditRoadmapPage />
           </Layout>
         } />
         

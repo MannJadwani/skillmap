@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useUser } from '@clerk/clerk-react';
 import { InputForm } from '../components/InputForm';
 import { generateRoadmap } from '../services/geminiService';
@@ -79,12 +79,12 @@ export const CreatePage: React.FC = () => {
           )}
           
           <div className="w-full max-w-3xl">
-            <button
-              onClick={() => navigate('/')}
-              className="mb-4 text-sm text-dark-400 hover:text-white transition-colors flex items-center gap-1"
+            <Link
+              to="/"
+              className="mb-4 text-sm text-dark-400 hover:text-white transition-colors flex items-center gap-1 inline-block"
             >
               ← Back to search
-            </button>
+            </Link>
             <InputForm 
               onSubmit={handleGenerate} 
               isLoading={isLoading} 

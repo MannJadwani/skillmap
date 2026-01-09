@@ -154,3 +154,55 @@ export const searchRoadmaps = async (query: string, limit = 10): Promise<SavedRo
 
   return data as SavedRoadmap[];
 };
+
+// Update an existing roadmap (only by creator)
+export const updateRoadmap = async (
+  roadmapId: string,
+  roadmap: Roadmap,
+  preferences: UserPreferences,
+  userId: string
+): Promise<SavedRoadmap | null> => {
+  if (!isSupabaseConfigured()) {
+    console.warn('Supabase not configured, skipping update');
+    return null;
+  }
+
+  // First verify the user owns this roadmap
+  const { data: existing, error: fetchError } = await supabase
+    .from('roadmaps')
+    .select('user_id')
+    .eq('id', roadmapId)
+    .single();
+
+  if (fetchError || !existing) {
+    console.error('Error fetching roadmap for update:', fetchError);
+    return null;
+  }
+
+  if (existing.user_id !== userId) {
+    console.error('User does not own this roadmap');
+    return null;
+  }
+
+  // Update the roadmap
+  const { data, error } = await supabase
+    .from('roadmaps')
+    .update({
+      title: roadmap.title,
+      description: roadmap.description,
+      target_skill: preferences.targetSkill,
+      current_level: preferences.currentLevel,
+      nodes: roadmap.nodes,
+    })
+    .eq('id', roadmapId)
+    .eq('user_id', userId) // Extra security check
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating roadmap:', error);
+    return null;
+  }
+
+  return data as SavedRoadmap;
+};

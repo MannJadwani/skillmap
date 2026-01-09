@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { RoadmapVisualizer } from '../components/RoadmapVisualizer';
 import { fetchRoadmapById, SavedRoadmap } from '../services/roadmapService';
 import { Roadmap } from '../types';
 import { SEO } from '../components/SEO';
-import { Map, ArrowRight } from 'lucide-react';
-import { UserButton } from '@clerk/clerk-react';
+import { Map, ArrowRight, Edit } from 'lucide-react';
+import { UserButton, useUser } from '@clerk/clerk-react';
 
 export const RoadmapPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useUser();
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
+  const [savedRoadmap, setSavedRoadmap] = useState<SavedRoadmap | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -36,6 +38,7 @@ export const RoadmapPage: React.FC = () => {
       if (!isMounted) return;
       
       if (saved) {
+        setSavedRoadmap(saved);
         const loadedRoadmap: Roadmap = {
           title: saved.title,
           description: saved.description,
@@ -69,10 +72,6 @@ export const RoadmapPage: React.FC = () => {
       return node;
     });
     setRoadmap({ ...roadmap, nodes: newNodes });
-  };
-
-  const handleReset = () => {
-    navigate('/');
   };
 
   if (isLoading) {
@@ -141,15 +140,31 @@ export const RoadmapPage: React.FC = () => {
           </div>
 
           <div className="p-4 border-t border-dark-700 space-y-4">
-            <button 
-              onClick={handleReset}
+            {/* Edit button - only show if user owns this roadmap */}
+            {user?.id && savedRoadmap?.user_id === user.id && id && (
+              <Link 
+                to={`/edit/${id}`}
+                className="group w-full flex items-center justify-between bg-dark-800 hover:bg-dark-700 text-white font-medium py-2 pl-4 pr-2 rounded-full border border-dark-700 transition-all"
+              >
+                <div className="flex items-center gap-2">
+                  <Edit size={14} />
+                  <span className="text-sm">Edit Roadmap</span>
+                </div>
+                <div className="bg-dark-700 text-white rounded-full p-1.5 group-hover:bg-primary transition-colors">
+                  <ArrowRight size={14} />
+                </div>
+              </Link>
+            )}
+            
+            <Link 
+              to="/"
               className="group w-full flex items-center justify-between bg-gradient-to-r from-primary to-orange-400 text-white font-bold py-2 pl-4 pr-2 rounded-full shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all transform hover:-translate-y-0.5"
             >
               <span className="text-sm">New Search</span>
               <div className="bg-white text-primary rounded-full p-1.5 shadow-sm group-hover:scale-110 transition-transform duration-200">
                 <ArrowRight size={16} />
               </div>
-            </button>
+            </Link>
             <div className="pt-2 flex justify-center border-t border-dark-700 mt-2">
               <UserButton afterSignOutUrl="/" 
                 appearance={{
@@ -165,13 +180,21 @@ export const RoadmapPage: React.FC = () => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col h-full bg-dark-950 relative">
           <div className="absolute top-4 right-4 lg:hidden z-30 flex items-center gap-2">
+            {user?.id && savedRoadmap?.user_id === user.id && id && (
+              <Link 
+                to={`/edit/${id}`}
+                className="p-2 bg-dark-800 border border-dark-700 shadow rounded-full text-primary hover:bg-primary hover:text-white transition-colors"
+              >
+                <Edit size={18} />
+              </Link>
+            )}
             <UserButton afterSignOutUrl="/" />
-            <button 
-              onClick={handleReset} 
+            <Link 
+              to="/"
               className="p-2 bg-dark-800 border border-dark-700 shadow rounded-full text-dark-400"
             >
               <Map size={20} />
-            </button>
+            </Link>
           </div>
           <RoadmapVisualizer roadmap={roadmap} onNodeToggle={handleNodeToggle} />
         </div>

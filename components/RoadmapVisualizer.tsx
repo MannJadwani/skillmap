@@ -10,8 +10,8 @@ interface RoadmapVisualizerProps {
 // Layout Configuration
 const NODE_WIDTH = 280;
 const NODE_HEIGHT = 160;
-const LEVEL_SPACING = 350;
-const VERTICAL_SPACING = 180;
+const LEVEL_SPACING = 200; // Vertical spacing between levels (top to bottom)
+const HORIZONTAL_SPACING = 300; // Horizontal spacing between nodes in same level
 const RADIUS = 12;
 
 // --- Canvas Helper Classes ---
@@ -77,25 +77,25 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
       levels.get(node.level)!.push(node);
     });
 
-    let maxY = 0;
+    let maxX = 0;
 
     levels.forEach((levelNodes, level) => {
       // Sort nodes in level to try to minimize edge crossing (heuristic: mostly stable sort)
       levelNodes.sort((a, b) => a.id.localeCompare(b.id));
 
-      const totalHeight = (levelNodes.length - 1) * VERTICAL_SPACING;
-      const startY = -totalHeight / 2;
+      const totalWidth = (levelNodes.length - 1) * HORIZONTAL_SPACING;
+      const startX = -totalWidth / 2;
 
       levelNodes.forEach((node, index) => {
-        node.x = level * LEVEL_SPACING;
-        node.y = startY + index * VERTICAL_SPACING;
-        // Jitter slightly to look organic if needed, but clean grid is better for reading
+        // Top to bottom: y increases with level, x varies within level
+        node.y = level * LEVEL_SPACING;
+        node.x = startX + index * HORIZONTAL_SPACING;
       });
       
-      if (totalHeight > maxY) maxY = totalHeight;
+      if (totalWidth > maxX) maxX = totalWidth;
     });
 
-    // Center the whole graph vertically
+    // Center the whole graph horizontally
     // Coordinates are relative to (0,0) being the start
     
     return { nodes, nodeMap };
@@ -182,17 +182,18 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
        node.data.dependencies.forEach(depId => {
          const parent = graphData.nodeMap.get(depId);
          if (parent) {
-            const startX = parent.x + NODE_WIDTH;
-            const startY = parent.y + NODE_HEIGHT / 2;
-            const endX = node.x;
-            const endY = node.y + NODE_HEIGHT / 2;
+            // Top to bottom: edges go from bottom of parent to top of child
+            const startX = parent.x + NODE_WIDTH / 2;
+            const startY = parent.y + NODE_HEIGHT;
+            const endX = node.x + NODE_WIDTH / 2;
+            const endY = node.y;
 
-            const midX = (startX + endX) / 2;
+            const midY = (startY + endY) / 2;
 
             ctx.beginPath();
             ctx.moveTo(startX, startY);
-            // Cubic bezier for smooth S-curve
-            ctx.bezierCurveTo(midX, startY, midX, endY, endX, endY);
+            // Cubic bezier for smooth vertical curve
+            ctx.bezierCurveTo(startX, midY, endX, midY, endX, endY);
             
             // Gradient Stroke
             const grad = ctx.createLinearGradient(startX, startY, endX, endY);
@@ -314,18 +315,21 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
     return () => cancelAnimationFrame(animationFrame);
   });
 
-  // Center Graph on Mount
+  // Center Graph on Mount (top to bottom layout)
   useEffect(() => {
     if (containerRef.current && graphData.nodes.length > 0) {
       const rect = containerRef.current.getBoundingClientRect();
+      const nodesX = graphData.nodes.map(n => n.x);
       const nodesY = graphData.nodes.map(n => n.y);
+      const minX = Math.min(...nodesX);
+      const maxX = Math.max(...nodesX);
       const minY = Math.min(...nodesY);
       const maxY = Math.max(...nodesY);
-      const height = maxY - minY + NODE_HEIGHT;
       
+      // Center horizontally and start from top with padding
       setOffset({
-        x: 100, // Start with some padding
-        y: (rect.height / 2) - ((minY + maxY + NODE_HEIGHT)/2)
+        x: (rect.width / 2) - ((minX + maxX + NODE_WIDTH) / 2),
+        y: 100 // Start with padding from top
       });
     }
   }, [graphData]);

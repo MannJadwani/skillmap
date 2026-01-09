@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserButton, useAuth } from '@clerk/clerk-react';
 import { Map, Search, LayoutGrid } from 'lucide-react';
 
@@ -10,12 +10,13 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children, showNav = true }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isSignedIn } = useAuth();
   const apiKey = localStorage.getItem('gemini_api_key');
 
   const handleClearKey = () => {
     localStorage.removeItem('gemini_api_key');
-    window.location.href = '/';
+    navigate('/');
   };
 
   if (!showNav) {
