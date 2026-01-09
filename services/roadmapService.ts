@@ -70,14 +70,26 @@ export const fetchPublicRoadmaps = async (limit = 20): Promise<SavedRoadmap[]> =
   return data as SavedRoadmap[];
 };
 
+// Track viewed roadmaps in this session to prevent double counting
+const viewedRoadmaps = new Set<string>();
+
 // Fetch a single roadmap by ID
-export const fetchRoadmapById = async (id: string): Promise<SavedRoadmap | null> => {
+export const fetchRoadmapById = async (id: string, incrementViews = true): Promise<SavedRoadmap | null> => {
   if (!isSupabaseConfigured()) {
     return null;
   }
 
-  // Increment view count
-  await supabase.rpc('increment_views', { roadmap_id: id });
+  // Only increment views once per session per roadmap
+  if (incrementViews && !viewedRoadmaps.has(id)) {
+    viewedRoadmaps.add(id);
+    // Use a try-catch to prevent errors from blocking the fetch
+    try {
+      await supabase.rpc('increment_views', { roadmap_id: id });
+    } catch (error) {
+      console.warn('Error incrementing views:', error);
+      // Continue even if increment fails
+    }
+  }
 
   const { data, error } = await supabase
     .from('roadmaps')
