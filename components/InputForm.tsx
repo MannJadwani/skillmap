@@ -32,80 +32,92 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-dark-800/80 backdrop-blur-xl rounded-2xl shadow-xl border border-dark-700 overflow-hidden">
+    <div className="w-full max-w-3xl mx-auto bg-[#1e1e1e] rounded-xl shadow-2xl border border-[#2c2c2c] overflow-hidden">
       
-      {/* Progress Bar */}
-      <div className="h-1 w-full bg-dark-700">
-        <div 
-          className="h-full bg-primary transition-all duration-500 ease-out"
-          style={{ width: `${(step / 3) * 100}%` }}
-        />
+      {/* Header / Progress Bar */}
+      <div className="bg-[#252525] px-6 py-4 border-b border-[#2c2c2c] flex items-center justify-between">
+         <div className="flex items-center gap-3">
+            <div className="text-white font-semibold text-lg tracking-tight">
+              {step === 1 && "Start a New Path"}
+              {step === 2 && "Refine Context"}
+              {step === 3 && "Customize Style"}
+            </div>
+         </div>
+         <div className="flex items-center gap-2">
+            <div className="h-1.5 w-24 bg-[#333] rounded-full overflow-hidden">
+               <div 
+                  className="h-full bg-primary transition-all duration-500 ease-out rounded-full"
+                  style={{ width: `${(step / 3) * 100}%` }}
+               />
+            </div>
+            <span className="text-xs text-dark-400 font-mono">{step}/3</span>
+         </div>
       </div>
 
-      <div className="p-8 md:p-12">
+      <div className="p-6 md:p-8">
         {/* Step 1: Target */}
         {step === 1 && (
-          <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-dark-700 rounded-lg text-primary border border-dark-600">
-                <Target size={24} />
-              </div>
-              <h2 className="text-2xl font-bold text-white">What do you want to learn?</h2>
-            </div>
-            
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300">
             <div className="space-y-4">
-              <label className="block text-sm font-medium text-dark-400">Target Skill / Technology</label>
-              <input
-                type="text"
-                value={formData.targetSkill}
-                onChange={(e) => handleChange('targetSkill', e.target.value)}
-                placeholder="e.g., React Native, Python for Data Science, Kubernetes..."
-                className="w-full text-lg p-4 rounded-xl border border-dark-700 bg-dark-900 text-white placeholder:text-dark-500 focus:bg-dark-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
-                autoFocus
-              />
-              <p className="text-sm text-dark-500">Be as specific as you like!</p>
+               <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-dark-400 uppercase tracking-wider text-xs">Target Skill</label>
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-dark-500 group-focus-within:text-primary transition-colors">
+                      <Target size={18} />
+                    </div>
+                    <input
+                      type="text"
+                      value={formData.targetSkill}
+                      onChange={(e) => handleChange('targetSkill', e.target.value)}
+                      placeholder="e.g. React Native, Python, Kubernetes..."
+                      className="w-full bg-[#121212] text-white text-lg py-3 pl-11 pr-4 rounded-lg border border-[#333] focus:border-primary focus:ring-1 focus:ring-primary transition-all outline-none placeholder:text-dark-600"
+                      autoFocus
+                    />
+                  </div>
+                  <p className="text-xs text-dark-500">Be specific! The more details, the better the roadmap.</p>
+               </div>
             </div>
           </div>
         )}
 
         {/* Step 2: Context */}
         {step === 2 && (
-          <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-purple-900/20 rounded-lg text-purple-400 border border-purple-900/30">
-                <BrainCircuit size={24} />
-              </div>
-              <h2 className="text-2xl font-bold text-white">Current Knowledge</h2>
-            </div>
-
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300">
             <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-dark-400 mb-2">How would you rate your current skill level in this area?</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
-                    <button
-                      key={level}
-                      onClick={() => handleChange('currentLevel', level)}
-                      className={`p-3 rounded-lg border text-sm font-medium transition-all ${
-                        formData.currentLevel === level
-                          ? 'bg-primary/10 border-primary text-primary'
-                          : 'bg-dark-900 border-dark-700 text-dark-400 hover:bg-dark-800 hover:text-white'
-                      }`}
-                    >
-                      {level}
-                    </button>
-                  ))}
-                </div>
+              
+              {/* Toolbar-like Toggle Group */}
+              <div className="space-y-2">
+                 <label className="text-sm font-medium text-dark-400 uppercase tracking-wider text-xs">Current Level</label>
+                 <div className="flex p-1 bg-[#121212] rounded-lg border border-[#333] w-full">
+                    {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
+                      <button
+                        key={level}
+                        onClick={() => handleChange('currentLevel', level)}
+                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+                          formData.currentLevel === level
+                            ? 'bg-[#2c2c2c] text-white shadow-sm border border-[#3e3e3e]'
+                            : 'text-dark-500 hover:text-dark-300'
+                        }`}
+                      >
+                        {level}
+                      </button>
+                    ))}
+                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-dark-400 mb-2">What is your background?</label>
-                <textarea
-                  value={formData.background}
-                  onChange={(e) => handleChange('background', e.target.value)}
-                  placeholder="e.g., I'm a frontend dev looking to go fullstack, or I know basic Java..."
-                  className="w-full p-4 rounded-xl border border-dark-700 bg-dark-900 text-white placeholder:text-dark-500 focus:bg-dark-900 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none h-32"
-                />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-dark-400 uppercase tracking-wider text-xs">Background Context</label>
+                <div className="relative group">
+                   <div className="absolute top-3 left-4 text-dark-500 group-focus-within:text-purple-400 transition-colors">
+                      <BrainCircuit size={18} />
+                   </div>
+                   <textarea
+                    value={formData.background}
+                    onChange={(e) => handleChange('background', e.target.value)}
+                    placeholder="Briefly describe your background (e.g. 'I know JS, want to learn Python')"
+                    className="w-full bg-[#121212] text-white text-sm py-3 pl-11 pr-4 rounded-lg border border-[#333] focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all outline-none resize-none h-24 placeholder:text-dark-600"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -113,42 +125,28 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
 
         {/* Step 3: Style */}
         {step === 3 && (
-          <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-teal-900/20 rounded-lg text-teal-400 border border-teal-900/30">
-                <BookOpen size={24} />
-              </div>
-              <h2 className="text-2xl font-bold text-white">Learning Preferences</h2>
-            </div>
-
-            <div className="space-y-4">
-              <label className="block text-sm font-medium text-dark-400 mb-2">How do you prefer to learn?</label>
-              <div className="space-y-3">
+          <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+             <div className="space-y-4">
+              <label className="text-sm font-medium text-dark-400 uppercase tracking-wider text-xs">Learning Style</label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {[
-                  { id: 'theory', title: 'Theory First', desc: 'Deep dive into concepts before coding.' },
-                  { id: 'practical', title: 'Project Based', desc: 'Learn by building things immediately.' },
-                  { id: 'balanced', title: 'Balanced', desc: 'A mix of concepts and hands-on practice.' },
+                  { id: 'theory', title: 'Theory First', desc: 'Deep Concepts' },
+                  { id: 'practical', title: 'Project Based', desc: 'Build & Learn' },
+                  { id: 'balanced', title: 'Balanced', desc: 'Mix of Both' },
                 ].map((style) => (
                   <button
                     key={style.id}
                     onClick={() => handleChange('learningStyle', style.id)}
-                    className={`w-full flex items-center p-4 rounded-xl border transition-all text-left ${
+                    className={`flex flex-col items-start p-3 rounded-lg border text-left transition-all ${
                       formData.learningStyle === style.id
-                        ? 'bg-primary/10 border-primary shadow-md ring-1 ring-primary'
-                        : 'bg-dark-900 border-dark-700 hover:border-primary/50 text-dark-400 hover:text-white'
+                        ? 'bg-[#252525] border-primary/50 ring-1 ring-primary/20'
+                        : 'bg-[#121212] border-[#333] hover:border-[#444]'
                     }`}
                   >
-                    <div>
-                      <div className={`font-semibold ${formData.learningStyle === style.id ? 'text-primary' : 'text-white'}`}>
-                        {style.title}
-                      </div>
-                      <div className="text-sm text-dark-500">{style.desc}</div>
+                    <div className={`font-medium text-sm ${formData.learningStyle === style.id ? 'text-white' : 'text-dark-300'}`}>
+                      {style.title}
                     </div>
-                    {formData.learningStyle === style.id && (
-                      <div className="ml-auto text-primary">
-                        <Sparkles size={20} />
-                      </div>
-                    )}
+                    <div className="text-xs text-dark-500 mt-1">{style.desc}</div>
                   </button>
                 ))}
               </div>
@@ -156,38 +154,38 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
           </div>
         )}
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center mt-10 pt-6 border-t border-dark-700">
+        {/* Footer / Actions */}
+        <div className="flex justify-between items-center mt-8 pt-4 border-t border-[#2c2c2c]">
           {step > 1 ? (
             <button
               onClick={() => setStep(step - 1)}
-              className="text-dark-400 font-medium hover:text-white transition-colors"
+              className="text-dark-400 text-sm font-medium hover:text-white transition-colors px-2"
             >
               Back
             </button>
           ) : (
-            <div /> // Spacer
+            <div /> 
           )}
           
           <button
             onClick={handleNext}
             disabled={!isStepValid() || isLoading}
-            className={`group flex items-center gap-3 pl-6 pr-2 py-2 rounded-full font-bold text-white transition-all transform hover:-translate-y-0.5 shadow-lg ${
+            className={`group flex items-center gap-2 pl-5 pr-1.5 py-1.5 rounded-full font-bold text-white transition-all transform hover:-translate-y-0.5 shadow-lg ${
               !isStepValid() || isLoading
-                ? 'bg-dark-700 text-dark-500 cursor-not-allowed shadow-none transform-none'
-                : 'bg-gradient-to-r from-primary to-orange-400 shadow-primary/40 hover:shadow-xl hover:shadow-primary/50'
+                ? 'bg-[#2c2c2c] text-dark-500 cursor-not-allowed shadow-none transform-none'
+                : 'bg-gradient-to-r from-primary to-orange-400 shadow-primary/20 hover:shadow-primary/40'
             }`}
           >
             {isLoading ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin ml-2" />
-                <span className="mr-4">Generating...</span>
-              </>
+              <div className="flex items-center gap-3 pr-4">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="text-sm">Generating...</span>
+              </div>
             ) : (
               <>
-                <span className="text-lg">{step === 3 ? 'Generate Roadmap' : 'Next Step'}</span>
-                <div className={`bg-white text-primary rounded-full p-2 shadow-sm ${(!isStepValid() || isLoading) ? 'opacity-50' : 'group-hover:scale-110 transition-transform duration-200'}`}>
-                  <ArrowRight size={20} />
+                <span className="text-sm">{step === 3 ? 'Generate' : 'Next'}</span>
+                <div className={`bg-white text-primary rounded-full p-1.5 shadow-sm ${(!isStepValid() || isLoading) ? 'opacity-50' : 'group-hover:scale-110 transition-transform duration-200'}`}>
+                  <ArrowRight size={16} />
                 </div>
               </>
             )}
