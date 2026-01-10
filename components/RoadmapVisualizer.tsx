@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { Roadmap, RoadmapNode, NodeType } from '../types';
 import { Move, ZoomIn, ZoomOut, Maximize, RefreshCw } from 'lucide-react';
 
@@ -101,6 +101,54 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
     return { nodes, nodeMap };
   }, [roadmap]);
 
+  const graphBounds = useMemo(() => {
+    if (!graphData?.nodes.length) return null;
+
+    const nodesX = graphData.nodes.map(n => n.x);
+    const nodesY = graphData.nodes.map(n => n.y);
+
+    return {
+      minX: Math.min(...nodesX),
+      maxX: Math.max(...nodesX),
+      minY: Math.min(...nodesY),
+      maxY: Math.max(...nodesY)
+    };
+  }, [graphData]);
+
+  const fitToView = useCallback(() => {
+    if (!containerRef.current || !graphBounds) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const padding = 80;
+
+    const graphWidth = (graphBounds.maxX - graphBounds.minX) + NODE_WIDTH;
+    const graphHeight = (graphBounds.maxY - graphBounds.minY) + NODE_HEIGHT;
+
+    const scaleX = rect.width / (graphWidth + padding * 2);
+    const scaleY = rect.height / (graphHeight + padding * 2);
+    const nextScale = Math.min(Math.max(0.2, Math.min(scaleX, scaleY)), 2);
+
+    const centerX = (graphBounds.minX + graphBounds.maxX + NODE_WIDTH) / 2;
+    const centerY = (graphBounds.minY + graphBounds.maxY + NODE_HEIGHT) / 2;
+
+    setScale(nextScale);
+    setOffset({
+      x: rect.width / 2 - centerX * nextScale,
+      y: rect.height / 2 - centerY * nextScale
+    });
+  }, [graphBounds]);
+
+  const toggleFullscreen = useCallback(async () => {
+    if (!containerRef.current) return;
+
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+      return;
+    }
+
+    await containerRef.current.requestFullscreen();
+  }, []);
+
   // --- Rendering Logic ---
 
   const drawRoundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
@@ -153,7 +201,7 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     // Clear with Dark Background
     ctx.fillStyle = '#0a0a0a'; // bg-dark-950
@@ -315,24 +363,19 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
     return () => cancelAnimationFrame(animationFrame);
   });
 
-  // Center Graph on Mount (top to bottom layout)
+  // Center Graph on Mount (fit full graph)
   useEffect(() => {
-    if (containerRef.current && graphData.nodes.length > 0) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const nodesX = graphData.nodes.map(n => n.x);
-      const nodesY = graphData.nodes.map(n => n.y);
-      const minX = Math.min(...nodesX);
-      const maxX = Math.max(...nodesX);
-      const minY = Math.min(...nodesY);
-      const maxY = Math.max(...nodesY);
-      
-      // Center horizontally and start from top with padding
-      setOffset({
-        x: (rect.width / 2) - ((minX + maxX + NODE_WIDTH) / 2),
-        y: 100 // Start with padding from top
-      });
-    }
-  }, [graphData]);
+    fitToView();
+  }, [fitToView]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      fitToView();
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [fitToView]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -424,10 +467,7 @@ export const RoadmapVisualizer: React.FC<RoadmapVisualizerProps> = ({ roadmap, o
             </button>
             <button 
               className="p-2 bg-dark-800 shadow-md rounded-lg border border-dark-700 hover:bg-dark-700"
-              onClick={() => {
-                setScale(0.8);
-                setOffset({ x: 50, y: 50 });
-              }}
+              onClick={toggleFullscreen}
             >
               <Maximize size={20} className="text-dark-400" />
             </button>
