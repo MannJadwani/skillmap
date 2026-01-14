@@ -184,7 +184,13 @@ export const updateRoadmap = async (
     return null;
   }
 
+  // Note: without a Supabase-recognized JWT, updates may be blocked by your Supabase RLS policies.
+  // If you don't want to integrate Clerk JWTs with Supabase, you must relax/disable RLS for updates
+  // or proxy writes through a backend using the Supabase service role key.
+
   // Update the roadmap
+  // Avoid `.single()`/`.maybeSingle()` here because PostgREST returns 406 when 0 rows match.
+  // Returning an array lets us handle "no rows" without a noisy 406 in the console.
   const { data, error } = await supabase
     .from('roadmaps')
     .update({
@@ -196,13 +202,19 @@ export const updateRoadmap = async (
     })
     .eq('id', roadmapId)
     .eq('user_id', userId) // Extra security check
-    .select()
-    .single();
+    .select('*');
 
   if (error) {
     console.error('Error updating roadmap:', error);
     return null;
   }
 
-  return data as SavedRoadmap;
+  const updated = (data ?? [])[0];
+  if (!updated) {
+    console.error('Update roadmap returned no row', { roadmapId, userId });
+    // Most commonly this means the update matched 0 rows (wrong `user_id`/`id`) or was blocked by RLS.
+    return null;
+  }
+
+  return updated as SavedRoadmap;
 };
