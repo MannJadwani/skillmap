@@ -37,9 +37,12 @@ CREATE POLICY "Anyone can view roadmaps" ON roadmaps
 CREATE POLICY "Anyone can create roadmaps" ON roadmaps
   FOR INSERT WITH CHECK (true);
 
--- Policy: Users can update their own roadmaps
-CREATE POLICY "Users can update own roadmaps" ON roadmaps
-  FOR UPDATE USING (auth.uid()::text = user_id OR user_id IS NULL);
+-- Policy: Anyone can update roadmaps
+-- NOTE: This is intentionally permissive to support a purely client-side app without
+-- Supabase Auth/JWTs. For a secure setup, keep RLS strict and proxy writes through
+-- a backend that verifies Clerk auth and uses the Supabase service role key.
+CREATE POLICY "Anyone can update roadmaps" ON roadmaps
+  FOR UPDATE USING (true) WITH CHECK (true);
 
 -- Function to increment view count
 CREATE OR REPLACE FUNCTION increment_views(roadmap_id UUID)

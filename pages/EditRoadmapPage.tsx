@@ -66,12 +66,7 @@ export const EditRoadmapPage: React.FC = () => {
       const updatedRoadmap = await generateRoadmap(prefs, apiKey);
 
       // Update in database
-      const updated = await updateRoadmap(
-        id,
-        updatedRoadmap,
-        prefs,
-        user.id
-      );
+      const updated = await updateRoadmap(id, updatedRoadmap, prefs, user.id);
 
       if (updated) {
         // Navigate back to the roadmap view
